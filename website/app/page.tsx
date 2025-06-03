@@ -1,103 +1,154 @@
-import Image from "next/image";
+"use client"
+import Popup from '@/components/Popup'
+import TaskCard from '@/components/TaskCard'
+import { title } from 'process'
+import React, { useEffect, useState } from 'react'
+import { Task, TaskList } from '@/context/Lists'
+
+
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  const [lists, setLists] = useState<TaskList[]>([])
+  const [showAddList, setShowAddList] = useState(false)
+  const [addListTitle, setAddListTitle] = useState("")
+
+  const listsdemo: TaskList[] = [
+    {
+      id: "1",
+      title: "My tasks",
+      tasks: [
+        {
+          id: "1",
+          title: "Task 1",
+          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+          date: "3rd July, 2020",
+          isComplete: false,
+        },
+        {
+          id: "2",
+          title: "Task 1",
+          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+          date: "3rd July, 2021",
+          isComplete: false,
+        },
+        {
+          id: "3",
+          title: "Task 1",
+          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+          date: "3rd July, 2021",
+          isComplete: true,
+        },
+        {
+          id: "4",
+          title: "Task 1",
+          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+          date: "3rd July, 2021",
+          isComplete: true,
+        },
+        {
+          id: "5",
+          title: "Task 1",
+          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+          date: "3rd July, 2021",
+          isComplete: true,
+        },
+      ]
+    },
+    {
+      id: "2",
+      title: "My tasks",
+      tasks: [
+        {
+          id: "1",
+          title: "Task 1",
+          description: "ds",
+          date: "",
+          isComplete: false,
+        },
+        {
+          id: "2",
+          title: "Task 1",
+          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+          date: "3rd july 2023",
+          isComplete: true,
+        },
+      ]
+    }
+  ]
+
+  useEffect(() => {
+    setLists(listsdemo);
+  }, [])
+
+  function generateTaskId() {
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    return `task-${timestamp}-${randomSuffix}`;
+  }
+
+  async function handleAddList() {
+    setLists((prev) => [
+      ...prev,
+      {
+        id: generateTaskId(),
+        title: addListTitle,
+        tasks: [],
+      },
+    ]);
+    setAddListTitle("")
+    setShowAddList(false)
+  }
+
+  async function handleAddTask(newTask: Task, listId: string) {
+    setLists(prevLists =>
+      prevLists.map(list => {
+        if (list.id === listId) {
+          return {
+            ...list,
+            tasks: [...list.tasks, newTask]
+          };
+        }
+        return list;
+      })
+    );
+  }
+
+
+  return (
+    <div className='min-h-[90vh] bg-white text-black'>
+      <span
+        onClick={() => { setShowAddList(true) }}
+        className=" cursor-pointer fixed right-10 bottom-10 bg-[#1c437c] text-white text-5xl w-16 h-16 rounded-full flex items-center justify-center">+</span>
+      <div className="p-3 flex gap-6 flex-wrap">
+        {lists.length ? lists.map((list: any, index: any) => (
+          <TaskCard key={index} title={list.title} tasks={list.tasks} handleAddTask={handleAddTask} id={list.id} />
+        )) :
+          <div className='text-[#1c437c] text-2xl' > No List Yet ! Create New List</div>
+        }
+      </div>
+
+      {showAddList &&
+        <div className="flex items-center justify-center fixed inset-0 bg-black/70 z-75">
+          <div className="text-[#1c437c] text-xl bg-white p-6 rounded-lg shadow-xl min-w-[300px]">
+            <button
+              onClick={() => setShowAddList(false)}
+              className="text-[#1c437c] float-right font-bold"
+            > ✖ </button>
+            <p>Add new List</p>
+            <input className='border-[#1c437c] active:border-none  border rounded-sm p-2 my-2'
+              type="text"
+              placeholder='Enter list title'
+              value={addListTitle}
+              onChange={(e) => { setAddListTitle(e.target.value) }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <button onClick={() => handleAddList()} className='ml-2 bg-[#1c437c] text-white rounded-sm p-2'>Add</button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      }
+
     </div>
-  );
+  )
 }
+
