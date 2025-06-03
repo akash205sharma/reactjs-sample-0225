@@ -2,118 +2,125 @@
 
 import { useEffect, useState } from "react";
 import AddTaskPopup from "./AddTaskPopup";
-import { Task } from "@/context/Lists";
+import { Task, useLists } from "@/context/Lists";
+import EditTaskPopup from "./EditTaskPopup";
 
 export default function TaskCard({
-    title,
-    tasks,
-    handleAddTask,
-    id,
+  title,
+  tasks,
+  id,
 }: {
-    title: string;
-    tasks: Task[];
-    id:string;
-    handleAddTask:(newTask:Task,listId:string)=>void;
+  title: string;
+  tasks: Task[];
+  id: string;
 }) {
+  const { toggleTaskCompleted } = useLists();
+  const [completed, setCompleted] = useState(0);
+  const [showAddTask, setShowAddTask] = useState(false);
+  const [showEditTask, setShowEditTask] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task>({
+    id: "",
+    title: "",
+    description: "",
+    date: "",
+    isComplete: false,
+  });
 
-    function generateTaskId() {
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
-        const randomSuffix = Math.random().toString(36).substring(2, 6);
-        return `task-${timestamp}-${randomSuffix}`;
-    }
+  const getCompletedCount = (tasks: Task[]) => {
+    if (tasks?.length) return tasks.filter((task) => task.isComplete).length;
+    else return 0;
+  };
 
-    const [completed, setCompleted] = useState(0)
-    const [showAddTask, setShowAddTask] = useState(false)
-    // const [tasksState, setTasksState] = useState<Task[]>()
-    const [newTask, setNewTask] = useState({
-        id:generateTaskId(),
-        title: "",
-        description: "",
-        date: "",
-        isComplete: false,
-    });
+  useEffect(() => {
+    setCompleted(getCompletedCount(tasks));
+  }, [tasks]);
 
-    const getCompletedCount = (tasks: Task[]) => {
-        if (tasks?.length)
-            return tasks.filter(task => task.isComplete).length;
-        else return 0;
-    };
+  return (
+    <div className="w-80 rounded-xl bg-white shadow-lg border border-[#1c437c]/30 p-5 space-y-4 transition-all duration-200 hover:shadow-xl hover:border-[#1c437c]">
+      {showAddTask && <AddTaskPopup id={id} setShowAddTask={setShowAddTask} />}
+      {showEditTask && (
+        <EditTaskPopup id={id} task={editingTask} setShowEditTask={setShowEditTask} />
+      )}
 
-    useEffect(() => {
-        setCompleted(getCompletedCount(tasks))
-    }, [tasks])
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-[#1c437c] wrap-anywhere ">{title}</h2>
+        <button className="text-[#1c437c] text-2xl hover:text-[#16345f] transition">⋮</button>
+      </div>
 
-
-    return (
-        <div className="border border-[#1c437c] w-80 rounded p-4 space-y-4">
-            {showAddTask &&
-                <AddTaskPopup id={id} newTask={newTask} setShowAddTask={setShowAddTask} setNewTask={setNewTask} handleAddTask={handleAddTask}  />
-            }
-
-            <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-[#1c437c]">{title}</h2>
-                <button>⋮</button>
-            </div>
-            {tasks?.length ?
-                <div className="flex items-center gap-3">
-                    <span onClick={() => { setShowAddTask(true) }} className="cursor-pointer bg-[#1c437c] text-white text-2xl w-10 h-10 rounded-full flex items-center justify-center">
-                        +
-                    </span>
-                    <span className="text-[#1c437c] font-medium">Add a task</span>
-                </div>
-                :
-                <div className="flex items-center gap-3 justify-between">
-                    <span className="text-[#1c437c] font-medium">New task</span>
-                    <span onClick={() => { setShowAddTask(true) }} className="cursor-pointer bg-[#1c437c] text-white text-2xl w-10 h-10 rounded-full flex items-center justify-center">
-                        +
-                    </span>
-                </div>
-            }
-            {tasks?.map((task, i) => (
-                <div key={i} className="space-y-2">
-                    {!task.isComplete &&
-                        <>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 border rounded-full hover:border-green-600"></div>
-                                    <p className="font-semibold text-[#1c437c]">{task.title}</p>
-                                    {task.date.length > 0 &&
-                                        <span role="img" aria-label="lock">
-                                            🔔
-                                        </span>
-                                    }
-                                </div>
-                                <span className="cursor-pointer hover:text-32xl " onClick={() => { alert("Edit") }} role="img" aria-label="lock" >
-                                    ✏️
-                                </span>
-
-                            </div>
-                            <p className="text-sm text-gray-600">{task.description}</p>
-                            {task.date.length > 0 &&
-                                <div className="bg-blue-100 px-3 py-1 w-fit rounded text-sm font-bold text-[#1c437c]">
-                                    task.date
-                                </div>
-                            }
-                        </>
-                    }
-                </div>
-            ))}
-            <div className="text-green-600">Completed({completed})</div>
-            {tasks.map((task, i) => (
-                <div key={i} className="space-y-2">
-                    {task.isComplete &&
-                        <>
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3 text-green-600">
-                                    <div className=" border-green-600  w-8 h-8 border rounded-full flex justify-center items-center "> ✓ </div>
-                                    <p className="font-semibold ">{task.title}</p>
-                                </div>
-                            </div>
-                        </>
-                    }
-                </div>
-            ))}
+      {/* Task Section */}
+      <div
+        className="flex items-center gap-3 group cursor-pointer"
+        onClick={() => setShowAddTask(true)}
+      >
+        <div className="bg-[#1c437c] group-hover:bg-[#16345f] text-white text-2xl w-10 h-10 rounded-full flex items-center justify-center transition">
+          +
         </div>
-    );
+        <span className="text-[#1c437c] font-medium group-hover:underline">
+          Add a task
+        </span>
+      </div>
+
+      {/* Incomplete Tasks */}
+      {tasks.map((task, i) =>
+        !task.isComplete ? (
+          <div
+            key={i}
+            className="p-3 bg-[#f1f6fd] rounded-lg hover:bg-[#e2efff] transition-all space-y-1"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div
+                  onClick={() => toggleTaskCompleted(task.id, id)}
+                  className="w-6 h-6 border-2 border-[#1c437c] rounded-full hover:bg-[#1c437c] hover:border-[#1c437c] transition cursor-pointer"
+                ></div>
+                <p className="text-[#1c437c] font-semibold">{task.title}</p>
+                {task.date && <span>🔔</span>}
+              </div>
+              <span
+                onClick={() => {
+                  setEditingTask(task);
+                  setShowEditTask(true);
+                }}
+                className="cursor-pointer hover:text-lg transition"
+              >
+                ✏️
+              </span>
+            </div>
+            <p className="text-sm text-gray-600">{task.description}</p>
+            {task.date && (
+              <div className="bg-blue-100 text-[#1c437c] text-xs px-2 py-1 w-fit rounded font-semibold">
+                {task.date}
+              </div>
+            )}
+          </div>
+        ) : null
+      )}
+
+      {/* Completed Title */}
+      <div className="text-green-700 font-semibold mt-4">
+        Completed ({completed})
+      </div>
+
+      {/* Completed Tasks */}
+      {tasks.map((task, i) =>
+        task.isComplete ? (
+          <div
+            key={i}
+            className="p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition"
+          >
+            <div className="flex items-center gap-3 text-green-700">
+              <div
+                onClick={() => toggleTaskCompleted(task.id, id)}
+                className="w-6 h-6 border-2 border-green-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-600 hover:text-white transition"
+              >
+                ✓
+              </div>
+              <p className="font-medium">{task.title}</p>
+            </div>
+          </div>
+        ) : null
+      )}
+    </div>
+  );
 }

@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { Task, useLists } from '@/context/Lists';
 
-interface AddTaskPopupProps {
-    setShowAddTask: (show: boolean) => void;
+interface EditTaskPopupProps {
+    setShowEditTask: (show: boolean) => void;
     id: string;
+    task: Task;
 }
 
-const AddTaskPopup = ({ setShowAddTask, id }: AddTaskPopupProps) => {
-    function generateTaskId() {
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
-        const randomSuffix = Math.random().toString(36).substring(2, 6);
-        return `task-${timestamp}-${randomSuffix}`;
-    }
+const EditTaskPopup = ({ setShowEditTask, id, task }: EditTaskPopupProps) => {
+    const { handleEditTask } = useLists();
+
+    const [newTask, setNewTask] = useState({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        date: task.date,
+        isComplete: task.isComplete,
+    });
 
     function formatDateWithOrdinal(date: Date): string {
         const day = date.getDate();
@@ -32,40 +36,25 @@ const AddTaskPopup = ({ setShowAddTask, id }: AddTaskPopupProps) => {
         return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
     }
 
-    const { handleAddTask } = useLists();
-
-    const [newTask, setNewTask] = useState<Task>({
-        id: generateTaskId(),
-        title: '',
-        description: '',
-        date: '',
-        isComplete: false,
-    });
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 text-[#1c437c]">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative space-y-6 border border-[#1c437c]">
+            <div className="relative w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl border border-[#1c437c] space-y-6">
                 <button
                     className="absolute top-3 right-4 text-2xl hover:text-red-600 transition"
-                    onClick={() => setShowAddTask(false)}
+                    onClick={() => setShowEditTask(false)}
+                    aria-label="Close edit task popup"
                 >
                     ✖
                 </button>
 
-                <h2 className="text-2xl font-bold text-center">Create New Task</h2>
+                <h2 className="text-2xl font-bold text-center">Edit Task</h2>
 
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
-                        handleAddTask(newTask, id);
-                        setShowAddTask(false);
-                        setNewTask({
-                            id: generateTaskId(),
-                            title: '',
-                            description: '',
-                            date: '',
-                            isComplete: false,
-                        });
+                        handleEditTask(newTask, id);
+                        setShowEditTask(false);
+                        setNewTask({ id: "", title: "", description: "", date: "", isComplete: false });
                     }}
                     className="space-y-4"
                 >
@@ -96,9 +85,7 @@ const AddTaskPopup = ({ setShowAddTask, id }: AddTaskPopupProps) => {
                             type="checkbox"
                             className="accent-[#1c437c]"
                             checked={newTask.isComplete}
-                            onChange={(e) =>
-                                setNewTask({ ...newTask, isComplete: e.target.checked })
-                            }
+                            onChange={(e) => setNewTask({ ...newTask, isComplete: e.target.checked })}
                         />
                         <span>Mark as Complete</span>
                     </label>
@@ -115,4 +102,4 @@ const AddTaskPopup = ({ setShowAddTask, id }: AddTaskPopupProps) => {
     );
 };
 
-export default AddTaskPopup;
+export default EditTaskPopup;

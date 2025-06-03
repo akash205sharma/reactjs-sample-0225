@@ -4,82 +4,15 @@ import TaskCard from '@/components/TaskCard'
 import { title } from 'process'
 import React, { useEffect, useState } from 'react'
 import { Task, TaskList } from '@/context/Lists'
-
+import { useLists } from '@/context/Lists'
 
 
 export default function Home() {
+  const {lists, setLists} = useLists(); 
 
-  const [lists, setLists] = useState<TaskList[]>([])
   const [showAddList, setShowAddList] = useState(false)
   const [addListTitle, setAddListTitle] = useState("")
 
-  const listsdemo: TaskList[] = [
-    {
-      id: "1",
-      title: "My tasks",
-      tasks: [
-        {
-          id: "1",
-          title: "Task 1",
-          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-          date: "3rd July, 2020",
-          isComplete: false,
-        },
-        {
-          id: "2",
-          title: "Task 1",
-          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-          date: "3rd July, 2021",
-          isComplete: false,
-        },
-        {
-          id: "3",
-          title: "Task 1",
-          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-          date: "3rd July, 2021",
-          isComplete: true,
-        },
-        {
-          id: "4",
-          title: "Task 1",
-          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-          date: "3rd July, 2021",
-          isComplete: true,
-        },
-        {
-          id: "5",
-          title: "Task 1",
-          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-          date: "3rd July, 2021",
-          isComplete: true,
-        },
-      ]
-    },
-    {
-      id: "2",
-      title: "My tasks",
-      tasks: [
-        {
-          id: "1",
-          title: "Task 1",
-          description: "ds",
-          date: "",
-          isComplete: false,
-        },
-        {
-          id: "2",
-          title: "Task 1",
-          description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-          date: "3rd july 2023",
-          isComplete: true,
-        },
-      ]
-    }
-  ]
-
-  useEffect(() => {
-    setLists(listsdemo);
-  }, [])
 
   function generateTaskId() {
     const now = new Date();
@@ -101,20 +34,6 @@ export default function Home() {
     setShowAddList(false)
   }
 
-  async function handleAddTask(newTask: Task, listId: string) {
-    setLists(prevLists =>
-      prevLists.map(list => {
-        if (list.id === listId) {
-          return {
-            ...list,
-            tasks: [...list.tasks, newTask]
-          };
-        }
-        return list;
-      })
-    );
-  }
-
 
   return (
     <div className='min-h-[90vh] bg-white text-black'>
@@ -123,7 +42,7 @@ export default function Home() {
         className=" cursor-pointer fixed right-10 bottom-10 bg-[#1c437c] text-white text-5xl w-16 h-16 rounded-full flex items-center justify-center">+</span>
       <div className="p-3 flex gap-6 flex-wrap">
         {lists.length ? lists.map((list: any, index: any) => (
-          <TaskCard key={index} title={list.title} tasks={list.tasks} handleAddTask={handleAddTask} id={list.id} />
+          <TaskCard key={index} title={list.title} tasks={list.tasks} id={list.id} />
         )) :
           <div className='text-[#1c437c] text-2xl' > No List Yet ! Create New List</div>
         }
