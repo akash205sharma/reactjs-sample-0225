@@ -18,23 +18,6 @@ const EditTaskPopup = ({ setShowEditTask, id, task }: EditTaskPopupProps) => {
         isComplete: task.isComplete,
     });
 
-    function formatDateWithOrdinal(date: Date): string {
-        const day = date.getDate();
-        const month = date.toLocaleString('en-US', { month: 'long' });
-        const year = date.getFullYear();
-
-        const getOrdinalSuffix = (n: number): string => {
-            if (n > 3 && n < 21) return 'th';
-            switch (n % 10) {
-                case 1: return 'st';
-                case 2: return 'nd';
-                case 3: return 'rd';
-                default: return 'th';
-            }
-        };
-
-        return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
-    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 text-[#1c437c]">
@@ -77,7 +60,7 @@ const EditTaskPopup = ({ setShowEditTask, id, task }: EditTaskPopupProps) => {
                         className="w-full px-4 py-2 rounded-lg border border-[#1c437c] focus:outline-none focus:ring-2 focus:ring-[#1c437c]"
                         value={newTask.date}
                         onChange={(e) =>
-                            setNewTask({ ...newTask, date: formatDateWithOrdinal(e.target.valueAsDate!) })
+                            setNewTask({ ...newTask, date: e.target.value })
                         }
                     />
                     <label className="flex items-center space-x-2 text-sm font-medium">

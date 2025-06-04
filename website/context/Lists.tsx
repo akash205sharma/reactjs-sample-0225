@@ -89,57 +89,56 @@ export const ListsProvider = ({ children }: { children: ReactNode }) => {
                     id: "1",
                     title: "Task 1",
                     description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "3rd July, 2020",
+                    date: "2020-08-03",
                     isComplete: false,
                 },
                 {
                     id: "2",
                     title: "Task 1",
                     description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "3rd July, 2021",
+                    date: "2021-05-23",
                     isComplete: false,
                 },
-                // {
-                //     id: "3",
-                //     title: "Task 1",
-                //     description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                //     date: "3rd July, 2021",
-                //     isComplete: true,
-                // },
-                // {
-                //     id: "4",
-                //     title: "Task 1",
-                //     description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                //     date: "3rd July, 2021",
-                //     isComplete: true,
-                // },
-                // {
-                //     id: "5",
-                //     title: "Task 1",
-                //     description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                //     date: "3rd July, 2021",
-                //     isComplete: true,
-                // },
+                {
+                    id: "3",
+                    title: "Task 1",
+                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+                    date: "2021-05-23",                    isComplete: true,
+                },
+                {
+                    id: "4",
+                    title: "Task 1",
+                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+                    date: "2021-05-23",
+                    isComplete: true,
+                },
+                {
+                    id: "5",
+                    title: "Task 1",
+                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+                    date: "2021-05-23",
+                    isComplete: true,
+                },
             ]
         },
         {
             id: "2",
             title: "My tasks",
             tasks: [
-                // {
-                //     id: "1",
-                //     title: "Task 1",
-                //     description: "ds",
-                //     date: "",
-                //     isComplete: false,
-                // },
-                // {
-                //     id: "2",
-                //     title: "Task 1",
-                //     description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                //     date: "3rd july 2023",
-                //     isComplete: true,
-                // },
+                {
+                    id: "1",
+                    title: "Task 1",
+                    description: "ds",
+                    date: "2021-05-23",
+                    isComplete: false,
+                },
+                {
+                    id: "2",
+                    title: "Task 1",
+                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
+                    date: "",
+                    isComplete: true,
+                },
             ]
         }
     ]

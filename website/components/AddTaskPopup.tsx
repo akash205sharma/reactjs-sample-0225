@@ -87,8 +87,8 @@ const AddTaskPopup = ({ setShowAddTask, id }: AddTaskPopupProps) => {
                         type="date"
                         className="w-full px-4 py-2 rounded-lg border border-[#1c437c] focus:outline-none focus:ring-2 focus:ring-[#1c437c]"
                         value={newTask.date}
-                        onChange={(e) =>
-                            setNewTask({ ...newTask, date: formatDateWithOrdinal(e.target.valueAsDate!) })
+                        onChange={(e) => 
+                            setNewTask({ ...newTask, date: e.target.value })
                         }
                     />
                     <label className="flex items-center space-x-2 text-sm font-medium">

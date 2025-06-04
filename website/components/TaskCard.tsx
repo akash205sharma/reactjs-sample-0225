@@ -35,6 +35,25 @@ export default function TaskCard({
     setCompleted(getCompletedCount(tasks));
   }, [tasks]);
 
+
+  function formatDateWithOrdinal(date: Date): string {
+        const day = date.getDate();
+        const month = date.toLocaleString('en-US', { month: 'long' });
+        const year = date.getFullYear();
+
+        const getOrdinalSuffix = (n: number): string => {
+            if (n > 3 && n < 21) return 'th';
+            switch (n % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        };
+
+        return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
+    }
+
   return (
     <div className="w-80 rounded-xl bg-white shadow-lg border border-[#1c437c]/30 p-5 space-y-4 transition-all duration-200 hover:shadow-xl hover:border-[#1c437c]">
       {showAddTask && <AddTaskPopup id={id} setShowAddTask={setShowAddTask} />}
@@ -90,7 +109,7 @@ export default function TaskCard({
             <p className="text-sm text-gray-600">{task.description}</p>
             {task.date && (
               <div className="bg-blue-100 text-[#1c437c] text-xs px-2 py-1 w-fit rounded font-semibold">
-                {task.date}
+                {formatDateWithOrdinal(new Date(task.date))}
               </div>
             )}
           </div>
