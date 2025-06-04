@@ -3,6 +3,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useLists } from '@/context/Lists'
 import { signOut } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
+// import Image from 'next/image'
 
 const Navbar = () => {
   const { user } = useLists() // make sure logout is defined in context

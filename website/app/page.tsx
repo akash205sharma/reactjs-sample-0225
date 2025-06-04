@@ -1,7 +1,7 @@
 "use client"
 import TaskCard from '@/components/TaskCard'
 import React, { useEffect, useState } from 'react'
-import { Task, TaskList } from '@/context/Lists'
+import { TaskList } from '@/context/Lists'
 import { useLists } from '@/context/Lists'
 import { useRouter } from 'next/navigation';
 
@@ -17,7 +17,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!user) router.push("/login");
-  }, [user])
+  }, [user,router])
 
 
 
@@ -56,7 +56,7 @@ export default function Home() {
       >+</span>
 
       <div className="p-3 flex gap-6 flex-wrap">
-        {lists.length ? lists.map((list: any, index: any) => (
+        {lists.length ? lists.map((list: TaskList, index:React.Key) => (
           <TaskCard key={index} title={list.title} tasks={list.tasks} id={list.id} setShowdeleteList={setShowdeleteList} setDeleteListId={setDeleteListId} />
         )) :
           <div className='text-[#1c437c] text-2xl' > No List Yet ! Create New List</div>

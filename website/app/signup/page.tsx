@@ -5,7 +5,7 @@ import { useLists } from "@/context/Lists";
 import { registerUser } from "@/lib/auth";
 import Link from "next/link";
 
-const page = () => {
+const Page = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,7 @@ const page = () => {
 
   async function handleSubmit() {
     try {
-      let res = await registerUser(email, password, username)
+      const res = await registerUser(email, password, username)
       if (res.user) {
         setUser(res.user)
         console.log("user signed up ")
@@ -30,7 +30,7 @@ const page = () => {
       }
     } catch (error) {
       setErr("User already exists")
-      console.log("some problem occured")
+      console.log("some problem occured",error)
     }
   }
 
@@ -92,4 +92,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
