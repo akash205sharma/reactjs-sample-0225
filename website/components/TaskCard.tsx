@@ -15,8 +15,8 @@ export default function TaskCard({
   title: string;
   tasks: Task[];
   id: string;
-  setShowdeleteList:any;
-  setDeleteListId:any;
+  setShowdeleteList: React.Dispatch<React.SetStateAction<boolean>>;
+  setDeleteListId:React.Dispatch<React.SetStateAction<string>>;
 }) {
   const { toggleTaskCompleted } = useLists();
   const [completed, setCompleted] = useState(0);
