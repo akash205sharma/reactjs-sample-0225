@@ -7,33 +7,7 @@ interface AddTaskPopupProps {
 }
 
 const AddTaskPopup = ({ setShowAddTask, id }: AddTaskPopupProps) => {
-    function generateTaskId() {
-        const now = new Date();
-        const timestamp = now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
-        const randomSuffix = Math.random().toString(36).substring(2, 6);
-        return `task-${timestamp}-${randomSuffix}`;
-    }
-
-    function formatDateWithOrdinal(date: Date): string {
-        const day = date.getDate();
-        const month = date.toLocaleString('en-US', { month: 'long' });
-        const year = date.getFullYear();
-
-        const getOrdinalSuffix = (n: number): string => {
-            if (n > 3 && n < 21) return 'th';
-            switch (n % 10) {
-                case 1: return 'st';
-                case 2: return 'nd';
-                case 3: return 'rd';
-                default: return 'th';
-            }
-        };
-
-        return `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
-    }
-
     const { handleAddTask } = useLists();
-
     const [newTask, setNewTask] = useState<Task>({
         id: generateTaskId(),
         title: '',
@@ -41,6 +15,13 @@ const AddTaskPopup = ({ setShowAddTask, id }: AddTaskPopupProps) => {
         date: '',
         isComplete: false,
     });
+
+    function generateTaskId() {
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
+        const randomSuffix = Math.random().toString(36).substring(2, 6);
+        return `task-${timestamp}-${randomSuffix}`;
+    }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 text-[#1c437c]">

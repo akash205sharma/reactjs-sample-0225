@@ -9,7 +9,6 @@ interface EditTaskPopupProps {
 
 const EditTaskPopup = ({ setShowEditTask, id, task }: EditTaskPopupProps) => {
     const { handleEditTask } = useLists();
-
     const [newTask, setNewTask] = useState({
         id: task.id,
         title: task.title,
@@ -17,7 +16,6 @@ const EditTaskPopup = ({ setShowEditTask, id, task }: EditTaskPopupProps) => {
         date: task.date,
         isComplete: task.isComplete,
     });
-
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 text-[#1c437c]">

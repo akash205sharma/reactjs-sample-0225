@@ -2,6 +2,14 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, Dispatch, SetStateAction } from 'react';
 
+import { auth } from '@/lib/firebase'
+import { onAuthStateChanged, User } from 'firebase/auth'
+import {
+    getLists,
+    updateAllLists,
+} from '@/lib/firebaseTasks'
+
+
 export type Task = {
     id: string;
     title: string;
@@ -19,18 +27,55 @@ export type TaskList = {
 interface ListsContextType {
     lists: TaskList[];
     setLists: Dispatch<SetStateAction<TaskList[]>>;
-    handleAddTask: (newTask: Task, listId: string) => {}
-    handleEditTask: (newTask: Task, listId: string) => {}
-    toggleTaskCompleted: (taskId: string, listId: string) => {}
+    handleAddTask: (newTask: Task, listId: string) => void
+    handleEditTask: (newTask: Task, listId: string) => void
+    toggleTaskCompleted: (taskId: string, listId: string) => void
+    user: User | null
+    setUser: Dispatch<SetStateAction<User | null>>
 }
 
 const Lists = createContext<ListsContextType | null>(null);
 
 export const ListsProvider = ({ children }: { children: ReactNode }) => {
     const [lists, setLists] = useState<TaskList[]>([])
+    const [user, setUser] = useState<User | null>(null)
+
+    // Load user session on mount
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            if (firebaseUser) {
+                setUser(firebaseUser)
+            } else {
+                setUser(null)
+                setLists([])
+            }
+        })
+
+        return () => unsubscribe()
+    }, [])
+
+    // load lists 
+    useEffect(() => {
+        if (user) {
+            getLists(user.uid).then(setLists).catch(console.error)
+        }
+    }, [user])
+
+
+    useEffect(() => {
+        const syncToFirestore = async () => {
+            if (user) {
+                await updateAllLists(user.uid, lists);
+            }
+        };
+        syncToFirestore();
+    }, [lists]);
+
+
+
 
     // const { data: session } = useSession();
-    async function handleAddTask(newTask: Task, listId: string) {
+    function handleAddTask(newTask: Task, listId: string) {
         setLists(prevLists =>
             prevLists.map(list => {
                 if (list.id === listId) {
@@ -42,9 +87,10 @@ export const ListsProvider = ({ children }: { children: ReactNode }) => {
                 return list;
             })
         );
+
     }
 
-    async function handleEditTask(newTask: Task, listId: string) {
+    function handleEditTask(newTask: Task, listId: string) {
         setLists(prevLists =>
             prevLists.map(list => {
                 if (list.id === listId) {
@@ -60,7 +106,7 @@ export const ListsProvider = ({ children }: { children: ReactNode }) => {
         );
     }
 
-    async function toggleTaskCompleted(taskId: string, listId: string) {
+    function toggleTaskCompleted(taskId: string, listId: string) {
         setLists(prevLists =>
             prevLists.map(list =>
                 list.id === listId
@@ -78,77 +124,8 @@ export const ListsProvider = ({ children }: { children: ReactNode }) => {
     }
 
 
-
-
-    const listsdemo: TaskList[] = [
-        {
-            id: "1",
-            title: "My tasks",
-            tasks: [
-                {
-                    id: "1",
-                    title: "Task 1",
-                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "2020-08-03",
-                    isComplete: false,
-                },
-                {
-                    id: "2",
-                    title: "Task 1",
-                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "2021-05-23",
-                    isComplete: false,
-                },
-                {
-                    id: "3",
-                    title: "Task 1",
-                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "2021-05-23",                    isComplete: true,
-                },
-                {
-                    id: "4",
-                    title: "Task 1",
-                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "2021-05-23",
-                    isComplete: true,
-                },
-                {
-                    id: "5",
-                    title: "Task 1",
-                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "2021-05-23",
-                    isComplete: true,
-                },
-            ]
-        },
-        {
-            id: "2",
-            title: "My tasks",
-            tasks: [
-                {
-                    id: "1",
-                    title: "Task 1",
-                    description: "ds",
-                    date: "2021-05-23",
-                    isComplete: false,
-                },
-                {
-                    id: "2",
-                    title: "Task 1",
-                    description: "Lorem ipsum dolor, sit amet consectetur adipisicing elit. In, tempora! ",
-                    date: "",
-                    isComplete: true,
-                },
-            ]
-        }
-    ]
-
-    useEffect(() => {
-        setLists(listsdemo);
-    }, [])
-
     return (
-        <Lists.Provider value={{ lists, setLists, handleAddTask, handleEditTask, toggleTaskCompleted }}>
+        <Lists.Provider value={{ user, setUser, lists, setLists, handleAddTask, handleEditTask, toggleTaskCompleted }}>
             {children}
         </Lists.Provider>
     );

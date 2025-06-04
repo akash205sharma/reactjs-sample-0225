@@ -9,10 +9,14 @@ export default function TaskCard({
   title,
   tasks,
   id,
+  setShowdeleteList,
+  setDeleteListId,
 }: {
   title: string;
   tasks: Task[];
   id: string;
+  setShowdeleteList:any;
+  setDeleteListId:any;
 }) {
   const { toggleTaskCompleted } = useLists();
   const [completed, setCompleted] = useState(0);
@@ -64,7 +68,7 @@ export default function TaskCard({
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-[#1c437c] wrap-anywhere ">{title}</h2>
-        <button className="text-[#1c437c] text-2xl hover:text-[#16345f] transition">⋮</button>
+        <button onClick={() => { setShowdeleteList(true); setDeleteListId(id) }} className="text-[#1c437c] text-2xl hover:text-[#16345f] transition">⋮</button>
       </div>
 
       {/* Task Section */}

@@ -1,17 +1,45 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLists } from "@/context/Lists";
+import { registerUser } from "@/lib/auth";
+import Link from "next/link";
 
 const page = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState<boolean>(false);
+  const [err, setErr] = useState("")
+  const router = useRouter();
+  const { user, setUser } = useLists();
+
+  useEffect(() => {
+    if (user) router.push("/");
+  }, [user])
+
+  async function handleSubmit() {
+    try {
+      let res = await registerUser(email, password, username)
+      if (res.user) {
+        setUser(res.user)
+        console.log("user signed up ")
+        setUsername("")
+        setEmail("")
+        setPassword("")
+      }
+    } catch (error) {
+      setErr("User already exists")
+      console.log("some problem occured")
+    }
+  }
+
 
   return (
     <div className="text-[#1c437c] bg-[#1c437c] min-h-[90vh] flex justify-center items-center px-4">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col items-center">
         <h1 className="text-4xl font-bold text-[#1c437c] mb-6">Sign up!</h1>
-
+        {err.length ? <p className="text-red-600" >{err}</p> : null}
         <input
           type="text"
           placeholder="Username"
@@ -54,10 +82,11 @@ const page = () => {
         <button
           type="submit"
           className="w-full max-w-[350px] bg-[#1c437c] text-white font-bold py-3 rounded-lg hover:bg-[#16325e] active:bg-[#145289] transition-colors"
-          onClick={() => alert("Signing up...")}
+          onClick={handleSubmit}
         >
           Sign up
         </button>
+        <span className="text-black text-sm pt-2" >Already have an account <Link href={"/login"} className=" cursor-pointer text-blue-500">Login</Link> </span>
       </div>
     </div>
   );

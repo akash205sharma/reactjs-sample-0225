@@ -1,16 +1,44 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
+import { useLists } from '@/context/Lists'
+import { loginUser } from "@/lib/auth";
+import Link from "next/link";
 
 const page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState<boolean>(false);
+  const [err, setErr] = useState("")
+  const router = useRouter();
+  const {user, setUser}=useLists();
+
+  useEffect(() => {
+    if(user) router.push("/");
+  }, [user])
+
+  async function handleSubmit() {
+    try {
+      let res= await loginUser(email,password)
+      if(res.user){
+        setUser(res.user)
+        console.log("user logged in ")
+        setEmail("")
+        setPassword("")
+      }
+    } catch (error) {
+      setErr("User does not Exist")
+      console.log("some problem occured")
+    }
+  }
+  
+
 
   return (
     <div className="bg-[#1c437c] min-h-[90vh] flex justify-center items-center px-4 text-[#1c437c]">
       <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md flex flex-col items-center">
         <h1 className="text-4xl font-bold text-[#1c437c] mb-6">Log in!</h1>
-
+        {err.length?<p className="text-red-600" >{err}</p>:null}
         <input
           type="email"
           placeholder="Email address"
@@ -51,10 +79,11 @@ const page = () => {
         <button
           type="submit"
           className="w-full max-w-[350px] bg-[#1c437c] text-white font-bold py-3 rounded-lg hover:bg-[#16325e] active:bg-[#145289] transition-colors"
-          onClick={() => alert("Logging in...")}
+          onClick={handleSubmit}
         >
           Log in
         </button>
+        <span className="text-black text-sm pt-2" >Don`t have an account <Link href={"/signup"} className=" cursor-pointer text-blue-500">signUp</Link> </span>
       </div>
     </div>
   );
